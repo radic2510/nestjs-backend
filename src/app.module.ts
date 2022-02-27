@@ -4,7 +4,7 @@ import { LoggerModule } from 'nestjs-pino';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
-import * as ormconfig from './ormconfig';
+import * as ormconfig from '../ormconfig';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({
