@@ -6,13 +6,15 @@ import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
 import * as ormconfig from '../ormconfig';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({isGlobal: true}),
     TypeOrmModule.forRoot(ormconfig),
     LoggerModule.forRoot(),
-    UsersModule],
+    UsersModule,
+    AuthModule],
   controllers: [AppController],
   providers: [AppService, ConfigService],
 })

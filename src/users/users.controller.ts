@@ -1,36 +1,62 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Req, Res } from '@nestjs/common';
+import {Controller, Get, Post, Body, Patch, Param, Delete, Req, Res, UseGuards} from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { ApiOperation } from '@nestjs/swagger';
+import {ApiCookieAuth, ApiOperation, ApiTags} from '@nestjs/swagger';
+import {Users} from "../entities/user.entity";
+import {User} from "../decorator/user.decorator";
+import {LocalAuthGuard} from "../auth/local-auth.guard";
+import {LoggedInGuard} from "../auth/logged-in.guard";
+import {NotLoggedInGuard} from "../auth/not-logged-in.guard";
 
-@Controller('users')
+@ApiTags('USERS')
+@Controller('api/users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
+  @ApiOperation({ summary: '로그인' })
+  @UseGuards(LocalAuthGuard)
+  @Post('login')
+  async login(@User() user: Users) {
+    return user;
+  }
+
+  @ApiCookieAuth('connect.sid')
+  @ApiOperation( { summary: '로그아웃' })
+  @UseGuards(LoggedInGuard)
+  @Post('logout')
+  async logout(@Res() res) {
+    res.clearCookie('connect.sid', { httpOnly: true });
+    return res.send('ok');
+  }
+
   @ApiOperation({ summary: '회원가입' })
-  @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.create(createUserDto);
+  @UseGuards(NotLoggedInGuard)
+  @Post('join')
+  async join(@Body() data: CreateUserDto) {
+    return this.usersService.create(data);
   }
 
+  @ApiOperation( { summary: '회원탈퇴' })
+  @UseGuards(LoggedInGuard)
+  @Delete('resign')
+  async remove(@User() user: Users) {
+    return this.usersService.remove(user);
+  }
+
+  @ApiCookieAuth('connect.sid')
+  @ApiOperation({ summary: '내 정보 조회' })
+  @UseGuards(LoggedInGuard)
   @Get()
-  findAll() {
-    return this.usersService.findAll();
+  async getMyInfo(@User() user: Users) {
+    return user || false;
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.usersService.findOne(+id);
+  @ApiOperation({ summary: '회원정보 수정' })
+  @UseGuards(LoggedInGuard)
+  @Patch()
+  async update(@Body() updateUserDto: UpdateUserDto) {
+    return this.usersService.update(updateUserDto);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(+id, updateUserDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.usersService.remove(+id);
-  }
 }
