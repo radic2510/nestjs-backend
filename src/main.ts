@@ -2,11 +2,16 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { Logger } from 'nestjs-pino';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import {HttpExceptionFilter} from "./http-exception.filter";
+import { ValidationPipe } from '@nestjs/common';
 
 declare const module: any;
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { bufferLogs: true});
+
+  // HttpExceptionFilter 적용
+  app.useGlobalFilters(new HttpExceptionFilter());
 
   // Swagger
   const config = new DocumentBuilder()
