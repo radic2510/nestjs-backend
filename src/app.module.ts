@@ -7,6 +7,7 @@ import { UsersModule } from './users/users.module';
 import * as ormconfig from '../ormconfig';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
+import { DefaultAdminModule } from 'nestjs-admin'
 
 @Module({
   imports: [
@@ -14,7 +15,9 @@ import { AuthModule } from './auth/auth.module';
     TypeOrmModule.forRoot(ormconfig),
     LoggerModule.forRoot(),
     UsersModule,
-    AuthModule],
+    AuthModule,
+    DefaultAdminModule
+  ],
   controllers: [AppController],
   providers: [AppService, ConfigService],
 })

@@ -3,6 +3,7 @@ import * as dotenv from 'dotenv';
 import { Users } from './src/entities/user.entity';
 
 dotenv.config();
+const AdminUser = require('nestjs-admin').AdminUserEntity;
 const config: TypeOrmModuleOptions = {
   type: 'mysql',
   host: 'localhost',
@@ -12,6 +13,7 @@ const config: TypeOrmModuleOptions = {
   database: process.env.DB_DATABASE,
   entities: [
     Users,
+    AdminUser,
   ],
   migrations: [__dirname + '/src/migrations/*.ts'],
   cli: { migrationsDir: 'src/migrations' },
